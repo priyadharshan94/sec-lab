@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="/day task/day 3/script.js"></script>
+  </head>
+  <body>
+    <h1>CALCULATOR</h1>
+    <input type="number" placeholder="Enter the value 1" ><br>
+    <input type="number" placeholder="Enter the value 2" ><br>
+    <select name="" id="">
+      <option value="Add">Add</option>
+      <option value="subtraction">Subtract</option>
+      <option value="multiplication">multiply</option>
+      <option value="division">diide</option>
+    </select>
+    <button type="button">Calculate</button>
+    <div>Result:</div>
+    <script>
+        let num1=parseInt(document.getElementById("num1").value)
+        let num2=parseInt(document.getElementById("num2").value)
+        let operation=document.getElementById("operation").value
+         result;
+        if (isNaN(num1) || isNaN(num2)) {
+            let result="Enter the valid num";
+        } else {
+            switch(operation){
+                case "add";
+                  result=num1+num2;
+                  break;
+                  case "subtraction";
+                  result=num1-num2;
+                  break;
+                  case "multiplication";
+                  result=num1*num2;
+                  break;
+                  case "division";
+                  result=num1+num2;
+                  break;
+
+            }
+        }
+        document.getElementById("result").innerText="result is"+""+result
+    }
+    </script>
+  </body>
+</html>
