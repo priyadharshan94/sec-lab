@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      margin: 5px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Manager</h1>
+  <p id="greeting"></p>
+  <input type="text" id="taskInput" placeholder="Enter a task">
+  <button onclick="handleAddTask()">Add Task</button>
+  <input type="text" id="multiInput" placeholder="Enter tasks separated by comma">
+  <button onclick="handleAddMultiple()">Add Multiple Tasks</button>
+  <h3>Current Tasks:</h3>
+  <ul id="taskList"></ul>
+  <p id="farewellMessage"></p>
+  <script>
+    let tasks = [];
+    const printTasks = () => {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${task}`;
+        list.appendChild(li);
+      });
+    };
+    const addTask = (task, callback) => {
+      if (task.trim() !== "") {
+        tasks.push(task.trim());
+        callback();
+      }
+    };
+    const addMultipleTasks = (callback, ...newTasks) => {
+      newTasks.forEach(task => {
+        if (task.trim() !== "") {
+          tasks.push(task.trim());
+        }
+      });
+      callback();
+    };
+    const greet = () => {
+      document.getElementById("greeting").textContent = "Welcome to Task Manager!";
+    };
+    const farewell = function () {
+      document.getElementById("farewellMessage").textContent = "Thank you for using Task Manager!";
+    };
+    function handleAddTask() {
+      const task = document.getElementById("taskInput").value;
+      addTask(task, printTasks);
+      document.getElementById("taskInput").value = "";
+    }
+    function handleAddMultiple() {
+      const input = document.getElementById("multiInput").value;
+      const taskArray = input.split(",");
+      addMultipleTasks(printTasks, ...taskArray);
+      document.getElementById("multiInput").value = "";
+    }
+    function scopeTest() {
+      let localVar = "local variable";
+      console.log(localVar);
+    }
+    let globalVar = "global variable";
+    scopeTest();
+    console.log(globalVar);
+    greet();
+    farewell();
+  </script>
+</body>
+</html>
