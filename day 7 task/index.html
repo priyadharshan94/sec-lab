@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Library Management System</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background: #f0f0f8;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+  }
+  .book-list {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(44, 62, 80, 0.1);
+  }
+  .book-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+  }
+  .book-item:last-child {
+    border-bottom: none;
+  }
+  .summary {
+    font-style: italic;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<h1>Library Management System</h1>
+<div class="book-list" id="bookList"></div>
+
+<script>
+  // Book class definition
+  class Book {
+    constructor(title, author, publishedYear) {
+      this.title = title;
+      this.author = author;
+      // Store publishedYear as a Date object representing Jan 1 of that year
+      this.publishedYear = new Date(publishedYear, 0, 1);
+    }
+
+    getSummary() {
+      return `${this.title} by ${this.author}, published in ${this.publishedYear.getFullYear()}.`;
+    }
+  }
+
+  // EBook subclass extending Book
+  class EBook extends Book {
+    constructor(title, author, publishedYear, fileSize) {
+      super(title, author, publishedYear); // Call parent constructor
+      this.fileSize = fileSize; // in MB
+    }
+
+    getSummary() {
+      // Use super.getSummary() and append file size info
+      return `${super.getSummary()} File size: ${this.fileSize} MB.`;
+    }
+  }
+
+  // Create instances of Book and EBook
+  const books = [
+    new Book("To Kill a Mockingbird", "Harper Lee", 1960),
+    new Book("1984", "George Orwell", 1949),
+    new EBook("The Silent Patient", "Alex Michaelides", 2019, 2.5),
+    new EBook("Atomic Habits", "James Clear", 2018, 1.2),
+  ];
+
+  // Display summaries on the page
+  const bookListDiv = document.getElementById("bookList");
+
+  books.forEach((book, index) => {
+    const bookDiv = document.createElement("div");
+    bookDiv.classList.add("book-item");
+    bookDiv.innerHTML = `
+      <strong>${book.title}</strong> (${book.publishedYear.getFullYear()})<br />
+      <span class="summary">${book.getSummary()}</span>
+    `;
+    bookListDiv.appendChild(bookDiv);
+  });
+</script>
+
+</body>
+</html>
