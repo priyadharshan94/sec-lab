@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>To-Do List with Persistent Storage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    li.completed span.task-text {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .task-text {
+      flex: 1;
+      cursor: pointer;
+    }
+    .delete-btn {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>To-Do List</h1>
+  <form id="taskForm">
+    <input
+      type="text"
+      id="taskInput"
+      placeholder="Enter a new task..."
+      autocomplete="off"
+      required
+    />
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    // Select elements
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    /**
+     * Retrieve tasks from Local Storage
+     * Returns an array of task objects [{text: string, completed: bool}, ...]
+     */
+    function getTasks() {
+      const tasksJSON = localStorage.getItem('tasks');
+      return tasksJSON ? JSON.parse(tasksJSON) : [];
+    }
+
+    /**
+     * Save the tasks array to Local Storage
+     * @param {Array} tasks 
+     */
+    function saveTasks(tasks) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    /**
+     * Render tasks to the DOM
+     * @param {Array} tasks 
+     */
+    function renderTasks(tasks) {
+      taskList.innerHTML = ''; // Clear the list first
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = task.completed ? 'completed' : '';
+
+        // Task text span (click to toggle complete)
+        const span = document.createElement('span');
+        span.className = 'task-text';
+        span.textContent = task.text;
+        span.addEventListener('click', () => toggleComplete(index));
+
+        // Delete button
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = 'Delete';
+        delBtn.addEventListener('click', () => deleteTask(index));
+
+        li.appendChild(span);
+        li.appendChild(delBtn);
+
+        taskList.appendChild(li);
+      });
+    }
+
+    /**
+     * Add a new task from input
+     * Saves to Local Storage and clears input & Session Storage
+     * @param {Event} e 
+     */
+    function addTask(e) {
+      e.preventDefault();
+
+      const taskText = taskInput.value.trim();
+      if (!taskText) return;
+
+      const tasks = getTasks();
+      tasks.push({ text: taskText, completed: false });
+
+      saveTasks(tasks);
+      renderTasks(tasks);
+
+      // Clear input and Session Storage for input data
+      taskInput.value = '';
+      sessionStorage.removeItem('tempTaskInput');
+    }
+
+    /**
+     * Delete task by index
+     * @param {number} index 
+     */
+    function deleteTask(index) {
+      const tasks = getTasks();
+      tasks.splice(index, 1);
+      saveTasks(tasks);
+      renderTasks(tasks);
+    }
+
+    /**
+     * Toggle completion status of task by index
+     * @param {number} index 
+     */
+    function toggleComplete(index) {
+      const tasks = getTasks();
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks(tasks);
+      renderTasks(tasks);
+    }
+
+    /**
+     * Save temporary input to Session Storage while typing
+     */
+    function saveTempInput() {
+      sessionStorage.setItem('tempTaskInput', taskInput.value);
+    }
+
+    /**
+     * On page load, restore tasks from Local Storage
+     * and restore temporary input from Session Storage
+     */
+    function initialize() {
+      // Load tasks from Local Storage
+      const tasks = getTasks();
+      renderTasks(tasks);
+
+      // Load temp input from Session Storage
+      const tempInput = sessionStorage.getItem('tempTaskInput');
+      if (tempInput) {
+        taskInput.value = tempInput;
+      }
+    }
+
+    // Event Listeners
+    taskForm.addEventListener('submit', addTask);
+    taskInput.addEventListener('input', saveTempInput);
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>
