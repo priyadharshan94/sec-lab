@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Input Validator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    form { max-width: 400px; }
+    .input-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.3rem; }
+    input { width: 100%; padding: 0.5rem; font-size: 1rem; }
+    .message { color: red; font-size: 0.9rem; margin-top: 0.3rem; }
+    .valid { color: green; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h2>Form Input Validator</h2>
+
+  <form id="myForm" novalidate>
+    <div class="input-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" />
+      <div id="nameMessage" class="message"></div>
+    </div>
+
+    <div class="input-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" />
+      <div id="emailMessage" class="message"></div>
+    </div>
+
+    <div class="input-group">
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone" maxlength="14" />
+      <div id="phoneMessage" class="message"></div>
+    </div>
+
+    <div class="input-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" />
+      <div id="passwordMessage" class="message"></div>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+<script>
+  // Grab form and inputs
+  const form = document.getElementById('myForm');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const phoneInput = document.getElementById('phone');
+  const passwordInput = document.getElementById('password');
+
+  const nameMessage = document.getElementById('nameMessage');
+  const emailMessage = document.getElementById('emailMessage');
+  const phoneMessage = document.getElementById('phoneMessage');
+  const passwordMessage = document.getElementById('passwordMessage');
+
+  // Regex explanations and definitions:
+
+  // Name: Letters and spaces only, length between 2 and 30
+  const nameRegex = /^[A-Za-z\s]{2,30}$/;
+
+  // Email: Basic email pattern with quantifiers and grouping
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  // Phone digits: exactly 10 digits
+  const phoneDigitsRegex = /^\d{10}$/;
+
+  // Password: Minimum 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  // Auto-format phone number on input using replace and capturing groups
+  phoneInput.addEventListener('input', () => {
+    // Remove all non-digit characters
+    let cleaned = phoneInput.value.replace(/\D/g, '');
+
+    // Limit to max 10 digits
+    cleaned = cleaned.substring(0, 10);
+
+    // Format: (XXX) XXX-XXXX
+    let formatted = cleaned.replace(/^(\d{0,3})(\d{0,3})(\d{0,4})$/, (match, p1, p2, p3) => {
+      let result = '';
+      if (p1) result = '(' + p1;
+      if (p1.length === 3) result += ') ';
+      if (p2) result += p2;
+      if (p2.length === 3) result += '-';
+      if (p3) result += p3;
+      return result;
+    });
+
+    phoneInput.value = formatted;
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault(); // prevent actual form submission
+
+    // Clear previous messages and styles
+    [nameMessage, emailMessage, phoneMessage, passwordMessage].forEach(msg => {
+      msg.textContent = '';
+      msg.classList.remove('valid');
+    });
+
+    let isValid = true;
+
+    // Validate Name
+    if (!nameRegex.test(nameInput.value.trim())) {
+      nameMessage.textContent = 'Name must be 2-30 letters and spaces only.';
+      isValid = false;
+    } else {
+      nameMessage.textContent = 'Valid name.';
+      nameMessage.classList.add('valid');
+    }
+
+    // Validate Email
+    if (!emailRegex.test(emailInput.value.trim())) {
+      emailMessage.textContent = 'Please enter a valid email address.';
+      isValid = false;
+    } else {
+      emailMessage.textContent = 'Valid email.';
+      emailMessage.classList.add('valid');
+    }
+
+    // Validate Phone
+    const phoneDigits = phoneInput.value.replace(/\D/g, '');
+    if (!phoneDigitsRegex.test(phoneDigits)) {
+      phoneMessage.textContent = 'Phone number must be exactly 10 digits.';
+      isValid = false;
+    } else {
+      phoneMessage.textContent = 'Valid phone number.';
+      phoneMessage.classList.add('valid');
+    }
+
+    // Validate Password
+    if (!passwordRegex.test(passwordInput.value)) {
+      passwordMessage.textContent = 'Password must be 8+ chars, include uppercase, lowercase, number & special char.';
+      isValid = false;
+    } else {
+      passwordMessage.textContent = 'Strong password.';
+      passwordMessage.classList.add('valid');
+    }
+
+    if (isValid) {
+      alert('All inputs are valid! Form ready to be submitted.');
+      // Further submission logic can go here
+    }
+  });
+</script>
+
+</body>
+</html>
